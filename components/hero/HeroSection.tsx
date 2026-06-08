@@ -101,7 +101,6 @@ function DebrisSystem({ active }: { active: boolean }) {
 export default function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const [particlesActive, setParticlesActive] = useState(false);
-  const [splineOnTop, setSplineOnTop]         = useState(false);
 
   const { scrollYProgress } = useScroll({
     target:  sectionRef,
@@ -109,8 +108,6 @@ export default function HeroSection() {
   });
 
   useMotionValueEvent(scrollYProgress, 'change', (v) => {
-    const flip = v > 0.25;
-    setSplineOnTop(flip);
     setParticlesActive(v > 0.3);
   });
 
@@ -141,10 +138,10 @@ export default function HeroSection() {
             position: 'absolute',
             top: 0, right: 0, bottom: 0,
             width: '60%',
-            zIndex: splineOnTop ? 10 : 5,
+            zIndex: 20,
           }}
         >
-          <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+          <div style={{ width: '100%', height: '100%', position: 'relative', pointerEvents: 'all' }}>
             <iframe
               src="https://my.spline.design/untitled-QANwVu40EZ0oWQSyYbSepwQf/"
               style={{
@@ -152,6 +149,7 @@ export default function HeroSection() {
                 height: '100%',
                 border: 'none',
                 background: 'transparent',
+                pointerEvents: 'all',
               }}
               allow="autoplay"
               loading="lazy"
@@ -165,7 +163,7 @@ export default function HeroSection() {
             position: 'absolute',
             top: 0, left: 0, bottom: 0,
             width: leftWidth,
-            zIndex: splineOnTop ? 3 : 20,
+            zIndex: 30,
             opacity: textOpacity,
             filter: textFilter,
             display: 'flex',
