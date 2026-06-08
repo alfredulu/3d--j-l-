@@ -1,8 +1,7 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { ScrollControls, useScroll } from '@react-three/drei';
 import * as THREE from 'three';
 
 function mapRange(v: number, i0: number, i1: number, o0: number, o1: number) {
@@ -19,7 +18,7 @@ function LemonWedge() {
         <cylinderGeometry args={[0.28, 0.28, 0.14, 6, 1, false, 0, Math.PI]} />
         <meshStandardMaterial color="#f5d430" roughness={0.5} />
       </mesh>
-      <mesh position={[0, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>
+      <mesh rotation={[Math.PI / 2, 0, 0]}>
         <cylinderGeometry args={[0.02, 0.02, 0.16, 6]} />
         <meshStandardMaterial color="#e8b820" roughness={0.6} />
       </mesh>
@@ -49,11 +48,10 @@ function HerbSprig() {
 }
 
 function PeppercornCluster() {
-  const positions = [
+  const positions: [number, number, number][] = [
     [0, 0, 0], [0.07, 0.04, 0.03], [-0.06, 0.05, -0.02],
     [0.03, 0.09, 0.05], [-0.04, 0.08, 0.06], [0.06, 0.12, -0.03],
-  ] as [number, number, number][];
-
+  ];
   return (
     <group>
       {positions.map((pos, i) => (
@@ -98,24 +96,38 @@ function GarlicClove() {
 
 // ── Entry configs ─────────────────────────────────────────────────────────
 const INGREDIENTS = [
-  { component: LemonWedge,     entryX:  8, entryY: -2, orbitR: 1.6, orbitOffset: 0,          inStart: 0.05, inEnd: 0.25 },
-  { component: HerbSprig,      entryX: -8, entryY:  2, orbitR: 1.3, orbitOffset: Math.PI * 0.4, inStart: 0.15, inEnd: 0.35 },
-  { component: PeppercornCluster, entryX: 6, entryY: 3, orbitR: 1.8, orbitOffset: Math.PI * 0.8, inStart: 0.25, inEnd: 0.45 },
-  { component: Chili,          entryX: -6, entryY: -3, orbitR: 1.5, orbitOffset: Math.PI * 1.2, inStart: 0.35, inEnd: 0.55 },
-  { component: GarlicClove,    entryX:  3, entryY: -5, orbitR: 1.2, orbitOffset: Math.PI * 1.6, inStart: 0.45, inEnd: 0.65 },
+  { component: LemonWedge,        entryX:  8, entryY: -2, orbitR: 1.6, orbitOffset: 0,              inStart: 0.05, inEnd: 0.25 },
+  { component: HerbSprig,         entryX: -8, entryY:  2, orbitR: 1.3, orbitOffset: Math.PI * 0.4,  inStart: 0.15, inEnd: 0.35 },
+  { component: PeppercornCluster, entryX:  6, entryY:  3, orbitR: 1.8, orbitOffset: Math.PI * 0.8,  inStart: 0.25, inEnd: 0.45 },
+  { component: Chili,             entryX: -6, entryY: -3, orbitR: 1.5, orbitOffset: Math.PI * 1.2,  inStart: 0.35, inEnd: 0.55 },
+  { component: GarlicClove,       entryX:  3, entryY: -5, orbitR: 1.2, orbitOffset: Math.PI * 1.6,  inStart: 0.45, inEnd: 0.65 },
 ];
+
+interface IngredientMeshProps {
+  component: React.ComponentType;
+  entryX: number;
+  entryY: number;
+  orbitR: number;
+  orbitOffset: number;
+  inStart: number;
+  inEnd: number;
+  scrollYRef: React.MutableRefObject<number>;
+  sectionRef: React.RefObject<HTMLElement>;
+}
 
 function IngredientMesh({
   component: Component,
   entryX, entryY, orbitR, orbitOffset, inStart, inEnd,
-}: typeof INGREDIENTS[0]) {
+  scrollYRef, sectionRef,
+}: IngredientMeshProps) {
   const ref = useRef<THREE.Group>(null);
-  const scrollData = useScroll();
   const timeRef = useRef(0);
 
   useFrame((_, delta) => {
     if (!ref.current) return;
-    const p = scrollData.offset;
+    const el = sectionRef.current;
+    if (!el) return;
+    const p = Math.max(0, Math.min(1, (scrollYRef.current - el.offsetTop) / el.offsetHeight));
     timeRef.current += delta;
 
     const arrived = mapRange(p, inStart, inEnd, 0, 1);
@@ -135,27 +147,45 @@ function IngredientMesh({
   );
 }
 
-function IngredientsScene() {
+interface IngredientsSceneProps {
+  scrollYRef: React.MutableRefObject<number>;
+  sectionRef: React.RefObject<HTMLElement>;
+}
+
+function IngredientsScene({ scrollYRef, sectionRef }: IngredientsSceneProps) {
   return (
     <>
       <ambientLight intensity={1.5} color="#ffffff" />
       <directionalLight position={[4, 6, 3]} intensity={1.4} color="#fff4ec" />
       <directionalLight position={[-3, -2, 4]} intensity={0.5} color="#e8f4ff" />
 
-      <ScrollControls pages={4} damping={0.1}>
-        <group>
-          {INGREDIENTS.map((ing, i) => (
-            <IngredientMesh key={i} {...ing} />
-          ))}
-        </group>
-      </ScrollControls>
+      <group>
+        {INGREDIENTS.map((ing, i) => (
+          <IngredientMesh
+            key={i}
+            {...ing}
+            scrollYRef={scrollYRef}
+            sectionRef={sectionRef}
+          />
+        ))}
+      </group>
     </>
   );
 }
 
 export default function IngredientsSection() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const scrollYRef = useRef(0);
+
+  useEffect(() => {
+    const onScroll = () => { scrollYRef.current = window.scrollY; };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   return (
     <section
+      ref={sectionRef}
       id="about"
       style={{
         position: 'relative',
@@ -206,7 +236,7 @@ export default function IngredientsSection() {
           camera={{ position: [0, 0, 5], fov: 50 }}
           style={{ background: 'transparent', position: 'absolute', inset: 0, zIndex: 0 }}
         >
-          <IngredientsScene />
+          <IngredientsScene scrollYRef={scrollYRef} sectionRef={sectionRef} />
         </Canvas>
       </div>
     </section>

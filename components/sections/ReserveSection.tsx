@@ -2,6 +2,7 @@
 
 import { useRef, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
+import { Environment } from '@react-three/drei';
 import * as THREE from 'three';
 
 // ── Ambient rotating plate ────────────────────────────────────────────────
@@ -15,14 +16,14 @@ function AmbientPlate() {
   });
 
   return (
-    <group ref={ref} scale={0.55}>
+    <group ref={ref} scale={0.32}>
       {/* Plate */}
       <mesh rotation={[-Math.PI / 2, 0, 0]}>
-        <cylinderGeometry args={[1.4, 1.2, 0.08, 48]} />
+        <cylinderGeometry args={[2.5, 2.2, 0.1, 64]} />
         <meshStandardMaterial color="#f5f0ea" roughness={0.3} metalness={0.05} />
       </mesh>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
-        <torusGeometry args={[1.38, 0.065, 12, 48]} />
+        <torusGeometry args={[2.48, 0.1, 12, 64]} />
         <meshStandardMaterial color="#ede5d8" roughness={0.4} />
       </mesh>
       {/* Small food remnant suggestion */}
@@ -97,8 +98,7 @@ export default function ReserveSection() {
           camera={{ position: [0, 1.5, 4], fov: 40 }}
           style={{ background: 'transparent' }}
         >
-          <ambientLight intensity={1.2} color="#fff4ec" />
-          <directionalLight position={[2, 4, 3]} intensity={1.0} color="#ffe0b0" />
+          <Environment preset="studio" />
           <AmbientPlate />
         </Canvas>
       </div>

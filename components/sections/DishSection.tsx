@@ -1,8 +1,7 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { ScrollControls, useScroll } from '@react-three/drei';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as THREE from 'three';
 
@@ -17,14 +16,21 @@ const DISHES = [
   { name: 'Aged Foie Gras', desc: 'Pan-seared, fig reduction, brioche crumble, smoked salt.' },
 ];
 
-function DishSceneInner({ onDishChange }: { onDishChange: (i: number) => void }) {
-  const scrollData = useScroll();
+interface DishSceneInnerProps {
+  onDishChange: (i: number) => void;
+  scrollYRef: React.MutableRefObject<number>;
+  sectionRef: React.RefObject<HTMLElement>;
+}
+
+function DishSceneInner({ onDishChange, scrollYRef, sectionRef }: DishSceneInnerProps) {
   const forkRef  = useRef<THREE.Group>(null);
   const knifeRef = useRef<THREE.Group>(null);
   const lastDish = useRef(-1);
 
   useFrame(() => {
-    const p = scrollData.offset;
+    const el = sectionRef.current;
+    if (!el) return;
+    const p = Math.max(0, Math.min(1, (scrollYRef.current - el.offsetTop) / el.offsetHeight));
 
     // fork from left
     if (forkRef.current) {
@@ -82,7 +88,6 @@ function DishSceneInner({ onDishChange }: { onDishChange: (i: number) => void })
           <cylinderGeometry args={[0.05, 0.04, 1.2, 8]} />
           <meshStandardMaterial color="#c4622d" roughness={0.2} metalness={0.8} />
         </mesh>
-        {/* blade */}
         <mesh position={[0, 0.22, 0]}>
           <boxGeometry args={[0.025, 0.7, 0.004]} />
           <meshStandardMaterial color="#d4956a" roughness={0.1} metalness={0.9} />
@@ -94,9 +99,18 @@ function DishSceneInner({ onDishChange }: { onDishChange: (i: number) => void })
 
 export default function DishSection() {
   const [activeDish, setActiveDish] = useState(0);
+  const sectionRef = useRef<HTMLElement>(null);
+  const scrollYRef = useRef(0);
+
+  useEffect(() => {
+    const onScroll = () => { scrollYRef.current = window.scrollY; };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   return (
     <section
+      ref={sectionRef}
       id="menu"
       style={{
         position: 'relative',
@@ -187,9 +201,11 @@ export default function DishSection() {
             camera={{ position: [0, 0, 5], fov: 45 }}
             style={{ background: 'transparent' }}
           >
-            <ScrollControls pages={4} damping={0.1}>
-              <DishSceneInner onDishChange={setActiveDish} />
-            </ScrollControls>
+            <DishSceneInner
+              onDishChange={setActiveDish}
+              scrollYRef={scrollYRef}
+              sectionRef={sectionRef}
+            />
           </Canvas>
         </div>
 

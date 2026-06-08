@@ -1,12 +1,23 @@
 'use client';
 
+import { useRef, useEffect, Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { ScrollControls } from '@react-three/drei';
+import { Environment, ContactShadows } from '@react-three/drei';
 import HeroScene from './HeroScene';
 
 export default function HeroSection() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const scrollYRef = useRef(0);
+
+  useEffect(() => {
+    const onScroll = () => { scrollYRef.current = window.scrollY; };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   return (
     <section
+      ref={sectionRef}
       id="hero"
       style={{
         position: 'relative',
@@ -14,7 +25,6 @@ export default function HeroSection() {
         height: '500vh',
       }}
     >
-      {/* Full-viewport sticky canvas */}
       <div
         style={{
           position: 'sticky',
@@ -67,15 +77,22 @@ export default function HeroSection() {
           </p>
         </div>
 
-        {/* R3F Canvas */}
         <Canvas
-          camera={{ position: [0, 1.2, 4.5], fov: 45 }}
+          camera={{ position: [0, 1.2, 5], fov: 45 }}
           style={{ background: '#faf6f0' }}
           shadows
         >
-          <ScrollControls pages={5} damping={0.1}>
-            <HeroScene />
-          </ScrollControls>
+          <Environment preset="studio" />
+          <ContactShadows
+            position={[0, -0.15, 0]}
+            opacity={0.55}
+            scale={12}
+            blur={2.5}
+            far={5}
+          />
+          <Suspense fallback={null}>
+            <HeroScene scrollYRef={scrollYRef} sectionRef={sectionRef} />
+          </Suspense>
         </Canvas>
       </div>
     </section>
