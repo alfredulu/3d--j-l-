@@ -1,8 +1,10 @@
 'use client';
 
 import { useRef, useState, useMemo } from 'react';
-import Spline from '@splinetool/react-spline/next';
+import dynamic from 'next/dynamic';
 import { motion, useScroll, useTransform, useMotionValueEvent } from 'framer-motion';
+
+const Spline = dynamic(() => import('@splinetool/react-spline').then(m => m), { ssr: false });
 import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
