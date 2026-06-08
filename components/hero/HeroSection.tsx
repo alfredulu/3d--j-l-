@@ -1,14 +1,9 @@
 'use client';
 
 import { useRef, useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
 import { motion, useScroll, useTransform, useMotionValueEvent } from 'framer-motion';
-
-const Spline = dynamic(() => import('@splinetool/react-spline').then(m => m), { ssr: false });
 import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-
-const SPLINE_URL = 'https://my.spline.design/untitled-QANwVu40EZ0oWQSyYbSepwQf/';
 
 // ── Particle debris ────────────────────────────────────────────────────────
 
@@ -149,10 +144,19 @@ export default function HeroSection() {
             zIndex: splineOnTop ? 10 : 5,
           }}
         >
-          <Spline
-            scene={SPLINE_URL}
-            style={{ width: '100%', height: '100%' }}
-          />
+          <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+            <iframe
+              src="https://my.spline.design/untitled-QANwVu40EZ0oWQSyYbSepwQf/"
+              style={{
+                width: '100%',
+                height: '100%',
+                border: 'none',
+                background: 'transparent',
+              }}
+              allow="autoplay"
+              loading="lazy"
+            />
+          </div>
         </div>
 
         {/* Left text column — expands 42% → 100% on scroll */}
