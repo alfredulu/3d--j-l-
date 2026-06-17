@@ -19,7 +19,7 @@ const DISHES = [
 interface DishSceneInnerProps {
   onDishChange: (i: number) => void;
   scrollYRef: React.MutableRefObject<number>;
-  sectionRef: React.RefObject<HTMLElement>;
+  sectionRef: React.RefObject<HTMLElement | null>;
 }
 
 function DishSceneInner({ onDishChange, scrollYRef, sectionRef }: DishSceneInnerProps) {

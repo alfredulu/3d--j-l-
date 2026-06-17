@@ -112,7 +112,7 @@ interface IngredientMeshProps {
   inStart: number;
   inEnd: number;
   scrollYRef: React.MutableRefObject<number>;
-  sectionRef: React.RefObject<HTMLElement>;
+  sectionRef: React.RefObject<HTMLElement | null>;
 }
 
 function IngredientMesh({
@@ -149,7 +149,7 @@ function IngredientMesh({
 
 interface IngredientsSceneProps {
   scrollYRef: React.MutableRefObject<number>;
-  sectionRef: React.RefObject<HTMLElement>;
+  sectionRef: React.RefObject<HTMLElement | null>;
 }
 
 function IngredientsScene({ scrollYRef, sectionRef }: IngredientsSceneProps) {
