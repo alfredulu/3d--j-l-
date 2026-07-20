@@ -2,7 +2,7 @@
 
 import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
-import ArtFrame from '@/components/ui/ArtFrame';
+import PhotoPlate from '@/components/ui/PhotoPlate';
 import RevealText from '@/components/ui/RevealText';
 
 const SIDEBAR_BLOCKS = [
@@ -76,7 +76,9 @@ export default function StorySection() {
 
       {/* Right — image + stacked blocks */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
-        <ArtFrame
+        <PhotoPlate
+          name="kitchen"
+          src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1100&q=80"
           variant="truffle"
           label="The Pass — Service, 8 PM"
           parallax={12}

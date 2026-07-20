@@ -2,7 +2,7 @@
 
 import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
-import ArtFrame from '@/components/ui/ArtFrame';
+import PhotoPlate from '@/components/ui/PhotoPlate';
 import RevealText from '@/components/ui/RevealText';
 
 const WORDS = [
@@ -32,7 +32,9 @@ export default function EditorialSection() {
       }}
     >
       {/* Left — tall image plate */}
-      <ArtFrame
+      <PhotoPlate
+        name="hearth"
+        src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=1100&q=80"
         variant="ember"
         label="The Hearth — Live Coals"
         parallax={14}

@@ -2,16 +2,18 @@
 
 import { useRef, useState, useLayoutEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import ArtFrame from '@/components/ui/ArtFrame';
+import PhotoPlate from '@/components/ui/PhotoPlate';
 
 type Variant = 'sear' | 'gold' | 'truffle' | 'herb' | 'wine';
 
-const DISHES: { n: string; name: string; desc: string; variant: Variant }[] = [
-  { n: '01', name: 'Ember Wagyu', desc: 'A5 tenderloin, dry-aged 45 days, bone-marrow jus.', variant: 'sear' },
-  { n: '02', name: 'Black Truffle Tagliatelle', desc: 'Fresh pasta, 24-hour stock, shaved Périgord truffle.', variant: 'truffle' },
-  { n: '03', name: 'Seared Foie Gras', desc: 'Fig reduction, brioche crumble, smoked Lagos salt.', variant: 'gold' },
-  { n: '04', name: 'Coal-roast Heirloom', desc: 'Garden vegetables, herb oil, charred allium ash.', variant: 'herb' },
-  { n: '05', name: 'Palm-wine Poached Pear', desc: 'Spiced caramel, brown butter, cocoa nib.', variant: 'wine' },
+const U = (id: string) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=1100&q=80`;
+
+const DISHES: { n: string; name: string; desc: string; variant: Variant; img: string; src: string }[] = [
+  { n: '01', name: 'Ember Wagyu', desc: 'A5 tenderloin, dry-aged 45 days, bone-marrow jus.', variant: 'sear', img: 'dish-wagyu', src: U('1546964124-0cce460f38ef') },
+  { n: '02', name: 'Black Truffle Tagliatelle', desc: 'Fresh pasta, 24-hour stock, shaved Périgord truffle.', variant: 'truffle', img: 'dish-truffle', src: U('1473093295043-cdd812d0e601') },
+  { n: '03', name: 'Seared Foie Gras', desc: 'Fig reduction, brioche crumble, smoked Lagos salt.', variant: 'gold', img: 'dish-foie', src: U('1414235077428-338989a2e8c0') },
+  { n: '04', name: 'Coal-roast Heirloom', desc: 'Garden vegetables, herb oil, charred allium ash.', variant: 'herb', img: 'dish-heirloom', src: U('1512621776951-a57141f2eefd') },
+  { n: '05', name: 'Palm-wine Poached Pear', desc: 'Spiced caramel, brown butter, cocoa nib.', variant: 'wine', img: 'dish-pear', src: U('1488477181946-6428a0291777') },
 ];
 
 export default function DishSection() {
@@ -104,7 +106,9 @@ export default function DishSection() {
                 flexDirection: 'column',
               }}
             >
-              <ArtFrame
+              <PhotoPlate
+                name={d.img}
+                src={d.src}
                 variant={d.variant}
                 reveal={false}
                 parallax={6}
@@ -124,7 +128,7 @@ export default function DishSection() {
                 >
                   {d.n}
                 </span>
-              </ArtFrame>
+              </PhotoPlate>
               <div style={{ paddingTop: '1.6rem' }}>
                 <h3
                   style={{
