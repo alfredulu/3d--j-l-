@@ -1,72 +1,14 @@
 'use client';
 
-import { useRef, useState } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { Environment } from '@react-three/drei';
-import * as THREE from 'three';
+import RevealText from '@/components/ui/RevealText';
+import MagneticButton from '@/components/ui/MagneticButton';
+import ArtFrame from '@/components/ui/ArtFrame';
 
-// ── Ambient rotating plate ────────────────────────────────────────────────
-function AmbientPlate() {
-  const ref = useRef<THREE.Group>(null);
-
-  useFrame(({ clock }) => {
-    if (!ref.current) return;
-    ref.current.rotation.y = clock.elapsedTime * 0.18;
-    ref.current.position.y = Math.sin(clock.elapsedTime * 0.4) * 0.08;
-  });
-
-  return (
-    <group ref={ref} scale={0.32}>
-      {/* Plate */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]}>
-        <cylinderGeometry args={[2.5, 2.2, 0.1, 64]} />
-        <meshStandardMaterial color="#f5f0ea" roughness={0.3} metalness={0.05} />
-      </mesh>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
-        <torusGeometry args={[2.48, 0.1, 12, 64]} />
-        <meshStandardMaterial color="#ede5d8" roughness={0.4} />
-      </mesh>
-      {/* Small food remnant suggestion */}
-      <mesh position={[-0.2, 0.08, 0.1]} rotation={[0, 0.4, 0]}>
-        <boxGeometry args={[0.3, 0.06, 0.22]} />
-        <meshStandardMaterial color="#3d1a08" roughness={0.9} />
-      </mesh>
-      <mesh position={[0.15, 0.09, -0.1]}>
-        <sphereGeometry args={[0.08, 8, 8]} />
-        <meshStandardMaterial color="#8b4513" roughness={0.7} />
-      </mesh>
-    </group>
-  );
-}
-
-// ── CTA Button ─────────────────────────────────────────────────────────────
-function ReserveButton() {
-  const [hovered, setHovered] = useState(false);
-
-  return (
-    <a
-      href="#reserve"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        display: 'inline-block',
-        padding: '1rem 3rem',
-        border: '1.5px solid #c4622d',
-        backgroundColor: hovered ? '#c4622d' : 'transparent',
-        color: hovered ? '#ffffff' : '#c4622d',
-        fontFamily: 'var(--font-dm-sans), sans-serif',
-        fontSize: '0.82rem',
-        letterSpacing: '0.16em',
-        textTransform: 'uppercase' as const,
-        textDecoration: 'none',
-        transition: 'background-color 0.3s ease, color 0.3s ease',
-        cursor: 'pointer',
-      }}
-    >
-      Reserve Your Table
-    </a>
-  );
-}
+const DETAILS = [
+  { k: 'Hours', v: 'Tuesday — Sunday · From 7 PM' },
+  { k: 'Location', v: 'Victoria Island, Lagos' },
+  { k: 'Enquiries', v: 'reserve@ojele.ng' },
+];
 
 export default function ReserveSection() {
   return (
@@ -74,98 +16,96 @@ export default function ReserveSection() {
       id="reserve"
       style={{
         position: 'relative',
-        width: '100%',
         minHeight: '100vh',
-        background: 'linear-gradient(180deg, #faf6f0 0%, #ffffff 100%)',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 'clamp(5rem, 10vh, 8rem) 2rem',
+        background: 'var(--ink)',
+        color: 'var(--cream)',
         overflow: 'hidden',
+        display: 'flex',
+        alignItems: 'center',
+        padding: 'clamp(6rem, 14vh, 12rem) clamp(1.5rem, 5vw, 5rem)',
       }}
     >
-      {/* Background 3D canvas */}
+      {/* Ambient art wash */}
+      <ArtFrame
+        variant="ember"
+        reveal={false}
+        parallax={16}
+        rounded={0}
+        style={{ position: 'absolute', inset: 0, opacity: 0.5 }}
+      />
       <div
         style={{
           position: 'absolute',
           inset: 0,
-          zIndex: 0,
-          opacity: 0.45,
+          background: 'radial-gradient(ellipse 70% 60% at 50% 60%, transparent 20%, rgba(10,6,3,0.85) 90%)',
         }}
-      >
-        <Canvas
-          camera={{ position: [0, 1.5, 4], fov: 40 }}
-          style={{ background: 'transparent' }}
-        >
-          <Environment preset="studio" />
-          <AmbientPlate />
-        </Canvas>
-      </div>
+      />
 
-      {/* Content */}
-      <div
-        style={{
-          position: 'relative',
-          zIndex: 10,
-          textAlign: 'center',
-          maxWidth: '600px',
-        }}
-      >
-        <p
-          style={{
-            fontFamily: 'var(--font-dm-sans), sans-serif',
-            fontSize: '0.7rem',
-            letterSpacing: '0.22em',
-            textTransform: 'uppercase',
-            color: '#c4622d',
-            marginBottom: '1.5rem',
-          }}
-        >
+      <div style={{ position: 'relative', zIndex: 2, width: '100%', maxWidth: '1100px', margin: '0 auto', textAlign: 'center' }}>
+        <p className="eyebrow" style={{ color: 'var(--ember)', marginBottom: '1.8rem' }}>
           Reservations
         </p>
 
-        <h2
+        <RevealText
+          as="h2"
+          text="Reserve Your Table"
+          className="display"
           style={{
-            fontFamily: 'var(--font-fraunces), serif',
-            fontSize: 'clamp(2.8rem, 7vw, 5.5rem)',
-            fontWeight: 700,
-            color: '#1a0f0a',
-            lineHeight: 1.05,
-            letterSpacing: '-0.025em',
-            marginBottom: '1.2rem',
+            color: 'var(--cream)',
+            fontSize: 'clamp(2.8rem, 8vw, 7rem)',
             fontVariationSettings: '"opsz" 144',
+            marginBottom: '2rem',
           }}
-        >
-          Reserve Your Table
-        </h2>
+        />
 
         <p
           style={{
             fontFamily: 'var(--font-dm-sans), sans-serif',
-            fontSize: 'clamp(0.82rem, 1.3vw, 0.95rem)',
-            color: 'rgba(26,15,10,0.5)',
-            letterSpacing: '0.08em',
-            textTransform: 'uppercase',
-            marginBottom: '3rem',
+            fontSize: 'clamp(1rem, 1.4vw, 1.15rem)',
+            color: 'rgba(247,241,232,0.6)',
+            lineHeight: 1.7,
+            maxWidth: '46ch',
+            margin: '0 auto 3rem',
           }}
         >
-          Victoria Island, Lagos &mdash; Tuesday to Sunday
+          Fourteen seats. Three sittings. One evening you will not forget. Private
+          dining available for parties of eight and above.
         </p>
 
-        <ReserveButton />
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '4.5rem' }}>
+          <MagneticButton href="#reserve" variant="solid" strength={0.4}>
+            Book an Evening →
+          </MagneticButton>
+        </div>
 
-        <p
+        <div
           style={{
-            fontFamily: 'var(--font-dm-sans), sans-serif',
-            fontSize: '0.78rem',
-            color: 'rgba(26,15,10,0.4)',
-            marginTop: '1.8rem',
-            lineHeight: 1.6,
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: '2rem',
+            borderTop: '1px solid rgba(247,241,232,0.14)',
+            paddingTop: '2.5rem',
+            maxWidth: '780px',
+            margin: '0 auto',
           }}
         >
-          Private dining available for groups of 8 and above.
-        </p>
+          {DETAILS.map((d) => (
+            <div key={d.k}>
+              <p className="eyebrow" style={{ color: 'rgba(247,241,232,0.4)', marginBottom: '0.6rem' }}>
+                {d.k}
+              </p>
+              <p
+                style={{
+                  fontFamily: 'var(--font-fraunces), serif',
+                  fontSize: '1.05rem',
+                  color: 'var(--cream)',
+                }}
+              >
+                {d.v}
+              </p>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );

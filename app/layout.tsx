@@ -3,6 +3,10 @@ import { Fraunces, DM_Sans } from 'next/font/google';
 import './globals.css';
 import LenisProvider from '@/providers/LenisProvider';
 import Navbar from '@/components/Navbar';
+import Preloader from '@/components/system/Preloader';
+import Cursor from '@/components/system/Cursor';
+import Grain from '@/components/system/Grain';
+import ScrollProgress from '@/components/system/ScrollProgress';
 
 const fraunces = Fraunces({
   subsets: ['latin'],
@@ -19,13 +23,18 @@ const dmSans = DM_Sans({
 
 export const metadata: Metadata = {
   title: 'ÒJÈLÉ — Fine Dining, Victoria Island Lagos',
-  description: 'Where Lagos Eats Like Kings. A fine dining experience at the intersection of fire, time, and intention.',
+  description:
+    'Where Lagos Eats Like Kings. A fine dining experience at the intersection of fire, time, and intention — Victoria Island, Lagos.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${fraunces.variable} ${dmSans.variable}`}>
       <body>
+        <Preloader />
+        <Grain />
+        <Cursor />
+        <ScrollProgress />
         <LenisProvider>
           <Navbar />
           {children}

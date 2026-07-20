@@ -1,14 +1,30 @@
 @import "tailwindcss";
 
 @theme {
-  --color-cream: #faf6f0;
-  --color-surface: #f0e8dc;
-  --color-brown: #1a0f0a;
+  --color-cream: #f7f1e8;
+  --color-surface: #efe6d7;
+  --color-ink: #140c07;
+  --color-charcoal: #17100b;
   --color-terracotta: #c4622d;
+  --color-ember: #e07b3c;
+  --color-gold: #d9a441;
   --color-sienna: #8b4513;
   --color-white: #ffffff;
   --font-display: var(--font-fraunces), serif;
   --font-body: var(--font-dm-sans), sans-serif;
+}
+
+:root {
+  --cream: #f7f1e8;
+  --surface: #efe6d7;
+  --ink: #140c07;
+  --charcoal: #17100b;
+  --terracotta: #c4622d;
+  --ember: #e07b3c;
+  --gold: #d9a441;
+  --sienna: #8b4513;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
 }
 
 * {
@@ -18,34 +34,181 @@
 }
 
 html {
-  background-color: #faf6f0;
-  color: #1a0f0a;
+  background-color: var(--ink);
+  color: var(--cream);
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  background-color: #faf6f0;
-  color: #1a0f0a;
+  background-color: var(--cream);
+  color: var(--ink);
   font-family: var(--font-dm-sans), sans-serif;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
-::-webkit-scrollbar {
-  width: 4px;
-}
-::-webkit-scrollbar-track {
-  background: #faf6f0;
-}
-::-webkit-scrollbar-thumb {
-  background: #c4622d;
-  border-radius: 2px;
-}
-* {
-  scrollbar-width: thin;
-  scrollbar-color: #c4622d #faf6f0;
+/* Hide native cursor on precise pointers — replaced by custom cursor */
+@media (hover: hover) and (pointer: fine) {
+  body.custom-cursor,
+  body.custom-cursor * {
+    cursor: none;
+  }
 }
 
-section {
-  position: relative;
+::selection {
+  background: var(--terracotta);
+  color: #fff;
+}
+
+::-webkit-scrollbar { width: 0; height: 0; }
+* { scrollbar-width: none; }
+
+section { position: relative; }
+
+img { max-width: 100%; display: block; }
+
+a { color: inherit; }
+
+/* ─── Film grain overlay ─────────────────────────────────────────────── */
+.grain {
+  position: fixed;
+  inset: -50%;
+  width: 200%;
+  height: 200%;
+  pointer-events: none;
+  z-index: 9998;
+  opacity: 0.055;
+  mix-blend-mode: overlay;
+  background-image: var(--grain-url);
+  animation: grain 8s steps(10) infinite;
+  will-change: transform;
+}
+@keyframes grain {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-4%, -4%); }
+  20% { transform: translate(-8%, 3%); }
+  30% { transform: translate(3%, -10%); }
+  40% { transform: translate(-3%, 12%); }
+  50% { transform: translate(-8%, 6%); }
+  60% { transform: translate(9%, 0%); }
+  70% { transform: translate(0%, 10%); }
+  80% { transform: translate(-6%, 6%); }
+  90% { transform: translate(6%, -3%); }
+}
+
+/* ─── Custom cursor ──────────────────────────────────────────────────── */
+.cursor-dot,
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 9999;
+  border-radius: 999px;
+  mix-blend-mode: difference;
+}
+.cursor-dot {
+  width: 6px;
+  height: 6px;
+  background: #fff;
+  transform: translate(-50%, -50%);
+}
+.cursor-ring {
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  transform: translate(-50%, -50%);
+  transition: width 0.3s var(--ease-out-expo), height 0.3s var(--ease-out-expo),
+    background 0.3s ease, border-color 0.3s ease;
+}
+.cursor-ring.hovering {
+  width: 68px;
+  height: 68px;
+  background: rgba(255, 255, 255, 0.12);
+  border-color: transparent;
+}
+
+/* ─── Scroll progress bar ────────────────────────────────────────────── */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  z-index: 9997;
+  background: linear-gradient(90deg, var(--sienna), var(--terracotta), var(--gold));
+  transform-origin: left;
+  will-change: transform;
+}
+
+/* ─── Marquee ────────────────────────────────────────────────────────── */
+.marquee {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+}
+.marquee > * { flex-shrink: 0; }
+
+/* ─── Reveal utilities ───────────────────────────────────────────────── */
+.clip-reveal { clip-path: inset(0 0 100% 0); }
+
+.line-mask { overflow: hidden; display: block; }
+
+/* ─── Preloader ──────────────────────────────────────────────────────── */
+.preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+/* Accessibility: dampen everything for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .grain { animation: none; }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ─── Responsive layout helpers ──────────────────────────────────────── */
+.hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+}
+@media (max-width: 860px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+  }
+  .hero-plate {
+    display: none !important;
+  }
+}
+@media (max-width: 620px) {
+  .nav-links {
+    display: none !important;
+  }
+}
+
+/* Utility text classes */
+.eyebrow {
+  font-family: var(--font-dm-sans), sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+.display {
+  font-family: var(--font-fraunces), serif;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 0.98;
 }

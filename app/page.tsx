@@ -1,4 +1,5 @@
 import HeroSection from '@/components/hero/HeroSection';
+import MarqueeBand from '@/components/sections/MarqueeBand';
 import DishSection from '@/components/sections/DishSection';
 import EditorialSection from '@/components/sections/EditorialSection';
 import IngredientsSection from '@/components/sections/IngredientsSection';
@@ -11,6 +12,7 @@ export default function Home() {
   return (
     <main>
       <HeroSection />
+      <MarqueeBand />
       <DishSection />
       <EditorialSection />
       <IngredientsSection />
