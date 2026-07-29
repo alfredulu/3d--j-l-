@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { woodTexture, steakTopTexture, steakSideTexture, ceramicTexture, linenTexture } from '@/lib/textures';
 import { pointerState } from '@/lib/scroll';
+import { useInViewport } from '@/lib/useInViewport';
 
 /* Cinematic scroll-driven dining tablescape — every object is real geometry
    with PBR materials lit by a procedural studio environment (no external
@@ -183,14 +184,16 @@ function WineGlass() {
     <group position={[-1.9, 0.16, -1.15]} scale={0.82}>
       <mesh geometry={glassGeo} castShadow>
         <meshPhysicalMaterial
-          color="#ffffff"
-          roughness={0.04}
+          color="#fffaf2"
+          roughness={0.05}
           metalness={0}
-          transmission={0.94}
-          thickness={0.25}
-          ior={1.45}
           transparent
-          opacity={0.98}
+          opacity={0.22}
+          envMapIntensity={2.2}
+          clearcoat={1}
+          clearcoatRoughness={0.06}
+          side={THREE.DoubleSide}
+          depthWrite={false}
         />
       </mesh>
       <mesh geometry={wineGeo}>
@@ -410,7 +413,7 @@ function SceneContents({ progressRef }: { progressRef: React.MutableRefObject<nu
         intensity={170}
         color="#ffcf98"
         castShadow
-        shadow-mapSize={[1024, 1024]}
+        shadow-mapSize={[512, 512]}
         shadow-bias={-0.0002}
       />
       {/* ember rim from behind */}
@@ -439,16 +442,20 @@ function SceneContents({ progressRef }: { progressRef: React.MutableRefObject<nu
 }
 
 export default function TableScene({ progressRef }: { progressRef: React.MutableRefObject<number> }) {
+  const { ref, inView } = useInViewport<HTMLDivElement>('20%');
   return (
-    <Canvas
-      shadows
-      gl={{ antialias: true, powerPreference: 'high-performance' }}
-      dpr={[1, 1.6]}
-      camera={{ position: [0.5, 1.45, 2.3], fov: 42 }}
-      style={{ width: '100%', height: '100%' }}
-    >
-      <color attach="background" args={['#0d0703']} />
-      <SceneContents progressRef={progressRef} />
-    </Canvas>
+    <div ref={ref} style={{ width: '100%', height: '100%' }}>
+      <Canvas
+        shadows
+        frameloop={inView ? 'always' : 'never'}
+        gl={{ antialias: false, powerPreference: 'high-performance' }}
+        dpr={[1, 1.35]}
+        camera={{ position: [0.5, 1.45, 2.3], fov: 42 }}
+        style={{ width: '100%', height: '100%' }}
+      >
+        <color attach="background" args={['#0d0703']} />
+        <SceneContents progressRef={progressRef} />
+      </Canvas>
+    </div>
   );
 }

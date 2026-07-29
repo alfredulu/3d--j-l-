@@ -2,9 +2,10 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { motion, useScroll, useTransform, useMotionValueEvent } from 'framer-motion';
+import { useInViewport } from '@/lib/useInViewport';
 
-/* Apple-style scroll-scrubbed film. Drop a clip at /public/video/film.webm
-   (and/or film.mp4) and this section appears automatically: scrolling down
+/* Apple-style scroll-scrubbed film. Drop a clip at /public/video/film.mp4
+   (and/or film.webm) and this section appears automatically: scrolling down
    plays it forward, scrolling up plays it in reverse. No file → the section
    renders nothing. Encode with dense keyframes for smooth scrubbing:
      ffmpeg -i in.mp4 -an -g 1 -crf 24 -movflags +faststart film.mp4
@@ -12,7 +13,7 @@ import { motion, useScroll, useTransform, useMotionValueEvent } from 'framer-mot
    See /public/video/README.md for the full guide (free footage ideas incl.
    filming a dish with your phone). */
 
-const SOURCES = ['/video/film.webm', '/video/film.mp4'];
+const SOURCES = ['/video/film.mp4', '/video/film.webm'];
 
 export default function ScrollFilmSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -22,6 +23,12 @@ export default function ScrollFilmSection() {
   const [failed, setFailed] = useState(false);
   const duration = useRef(0);
   const target = useRef(0);
+  // Don't buffer the film until the reader is within ~1.5 screens of it.
+  const { ref: gateRef, inView } = useInViewport<HTMLDivElement>('150%');
+  const [shouldLoad, setShouldLoad] = useState(false);
+  useEffect(() => {
+    if (inView) setShouldLoad(true);
+  }, [inView]);
 
   // loadedmetadata can fire before hydration attaches handlers — poll
   // readyState after mount so we never miss it.
@@ -77,6 +84,7 @@ export default function ScrollFilmSection() {
       }}
     >
       <div
+        ref={gateRef}
         style={{
           position: ready ? 'sticky' : 'relative',
           top: 0,
@@ -84,29 +92,31 @@ export default function ScrollFilmSection() {
           overflow: 'hidden',
         }}
       >
-        <video
-          ref={videoRef}
-          muted
-          playsInline
-          preload="auto"
-          onLoadedMetadata={(e) => {
-            duration.current = e.currentTarget.duration || 0;
-            setReady(true);
-          }}
-          onError={() => {
-            // try next source; give up when all fail
-            if (srcIdx + 1 < SOURCES.length) setSrcIdx(srcIdx + 1);
-            else setFailed(true);
-          }}
-          src={SOURCES[srcIdx]}
-          style={{
-            position: 'absolute',
-            inset: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-          }}
-        />
+        {shouldLoad && (
+          <video
+            ref={videoRef}
+            muted
+            playsInline
+            preload="auto"
+            onLoadedMetadata={(e) => {
+              duration.current = e.currentTarget.duration || 0;
+              setReady(true);
+            }}
+            onError={() => {
+              // try next source; give up when all fail
+              if (srcIdx + 1 < SOURCES.length) setSrcIdx(srcIdx + 1);
+              else setFailed(true);
+            }}
+            src={SOURCES[srcIdx]}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+            }}
+          />
+        )}
         {ready && (
           <>
             <div

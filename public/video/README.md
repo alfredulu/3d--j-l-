@@ -39,3 +39,11 @@ That part is never video — it's real-time 3D (Three.js / Spline).
 This site already has that: the hero tablescape is live 3D that scrubs
 with scroll AND follows the pointer. Video film sections and live 3D
 can coexist — that's what most award sites do.
+
+## Current film
+
+`film.mp4` — 18s macro b-roll of a T-bone steak searing over open flame
+(1280px, all-intra H.264 for smooth scrubbing). Sourced from the public
+repo mahmud035/the-bbq-place-restaurant (media/video/home-bg-video.mkv),
+which ships it as template stock footage. Replace it any time by dropping
+your own film.mp4 here — your own dishes will always beat stock.

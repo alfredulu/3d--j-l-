@@ -161,7 +161,6 @@ export default function ArtFrame({
               radial-gradient(circle at 52% 74%, rgba(255,236,205,0.28) 0%, transparent 6%)
             `,
             mixBlendMode: 'screen',
-            filter: 'blur(1px)',
           }}
         />
         {/* Deep shadow pockets for contrast */}

@@ -4,6 +4,7 @@ import { useRef, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import RevealText from '@/components/ui/RevealText';
+import { useInViewport } from '@/lib/useInViewport';
 
 function mapRange(v: number, i0: number, i1: number, o0: number, o1: number) {
   const t = Math.max(0, Math.min(1, (v - i0) / (i1 - i0)));
@@ -189,6 +190,7 @@ function IngredientsScene({ scrollYRef, sectionRef }: SceneProps) {
 export default function IngredientsSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const scrollYRef = useRef(0);
+  const { ref: gateRef, inView } = useInViewport<HTMLDivElement>('20%');
 
   useEffect(() => {
     const onScroll = () => {
@@ -216,14 +218,17 @@ export default function IngredientsSection() {
         />
 
         {/* 3D canvas */}
-        <Canvas
-          gl={{ antialias: true }}
-          dpr={[1, 1.6]}
-          camera={{ position: [0, 0, 5], fov: 50 }}
-          style={{ position: 'absolute', inset: 0, zIndex: 1 }}
-        >
-          <IngredientsScene scrollYRef={scrollYRef} sectionRef={sectionRef} />
-        </Canvas>
+        <div ref={gateRef} style={{ position: 'absolute', inset: 0, zIndex: 1 }}>
+          <Canvas
+            frameloop={inView ? 'always' : 'never'}
+            gl={{ antialias: false }}
+            dpr={[1, 1.35]}
+            camera={{ position: [0, 0, 5], fov: 50 }}
+            style={{ width: '100%', height: '100%' }}
+          >
+            <IngredientsScene scrollYRef={scrollYRef} sectionRef={sectionRef} />
+          </Canvas>
+        </div>
 
         {/* Foreground copy */}
         <div
