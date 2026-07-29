@@ -1,5 +1,6 @@
 import HeroSection from '@/components/hero/HeroSection';
 import MarqueeBand from '@/components/sections/MarqueeBand';
+import ScrollFilmSection from '@/components/sections/ScrollFilmSection';
 import DishSection from '@/components/sections/DishSection';
 import EditorialSection from '@/components/sections/EditorialSection';
 import IngredientsSection from '@/components/sections/IngredientsSection';
@@ -13,6 +14,7 @@ export default function Home() {
     <main>
       <HeroSection />
       <MarqueeBand />
+      <ScrollFilmSection />
       <DishSection />
       <EditorialSection />
       <IngredientsSection />
